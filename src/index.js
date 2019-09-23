@@ -10,8 +10,6 @@ function forEach(array, fn, from = 0, to = array.length) {
     for (let i = from; i < to; ++i) {
         fn(array[i], i, array)
     }
-
-    return array;
 }
 
 /*
