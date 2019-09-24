@@ -145,7 +145,7 @@ function calculator(number = 0) {
 }
 
 function checkErrors(fn, array = [1]) {
-    if (array && !Array.isArray(array) || !array.length) {
+    if (array && !(array instanceof Array) || !array.length) {
         throw new Error('empty array')
     }
 
