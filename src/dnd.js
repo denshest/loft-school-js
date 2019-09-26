@@ -27,6 +27,21 @@ const homeworkContainer = document.querySelector('#homework-container');
    homeworkContainer.appendChild(newDiv);
  */
 function createDiv() {
+    const namespaceURI = 'http://www.w3.org/1999/xhtml';
+    let div = document.createElementNS(namespaceURI, 'div');
+
+    div.classList.add('draggable-div');
+    div.style.width = `${getRandomInt(200)}px`;
+    div.style.height = `${getRandomInt(200)}px`;
+    div.style.top = `${getRandomInt(200)}px`;
+    div.style.left = `${getRandomInt(200)}px`;
+    div.style.backgroundColor = `rgb(${getRandomInt(255)}, ${getRandomInt(255)}, ${getRandomInt(255)})`;
+
+    return div;
+}
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
 }
 
 /*
@@ -37,7 +52,64 @@ function createDiv() {
    homeworkContainer.appendChild(newDiv);
    addListeners(newDiv);
  */
+var dragSrcEl = null;
+
 function addListeners(target) {
+    function handleDragStart(e) {
+        this.style.opacity = '0.4';
+
+        dragSrcEl = this;
+
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.outerHTML);
+    }
+
+    function handleDragOver(e) {
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+
+        e.dataTransfer.dropEffect = 'move';
+
+        return false;
+    }
+
+    function handleDragEnter() {
+        this.style.border ='2px dashed #000';
+    }
+
+    function handleDragLeave() {
+        this.style.border ='none';
+        this.style.opacity ='1';
+    }
+
+    function handleDrop(e) {
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
+
+        if (dragSrcEl !== this) {
+            dragSrcEl.outerHTML = this.outerHTML;
+            this.outerHTML = e.dataTransfer.getData('text/html');
+        }
+
+        return false;
+    }
+
+    function handleDragEnd() {
+        homeworkContainer.querySelectorAll('.draggable-div').forEach(item => {
+            item.style.border ='none';
+        });
+    }
+
+    target.draggable = true;
+
+    target.addEventListener('dragstart', handleDragStart, false);
+    target.addEventListener('dragenter', handleDragEnter, false);
+    target.addEventListener('dragover', handleDragOver, false);
+    target.addEventListener('dragleave', handleDragLeave, false);
+    target.addEventListener('drop', handleDrop, false);
+    target.addEventListener('dragend', handleDragEnd, false);
 }
 
 let addDivButton = homeworkContainer.querySelector('#addDiv');
