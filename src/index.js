@@ -34,13 +34,24 @@ function loadAndSortTowns() {
 
     xhr.open('GET', 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json', true);
 
+    function compare(a, b) {
+        if (a.name < b.name) {
+            return -1; 
+        }
+        if (a.name > b.name) {
+            return 1; 
+        }
+        
+        return 0;
+    }
+
     return new Promise((resolve, reject )=> {
         xhr.send();
         xhr.onload = () => {
             if (xhr.status !== 200) {
                 reject(xhr.statusText)
             } else {
-                resolve(JSON.parse(xhr.response).sort())
+                resolve(JSON.parse(xhr.response).sort(compare))
             }
         }
     })
