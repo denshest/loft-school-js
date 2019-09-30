@@ -9,7 +9,7 @@
    addListener('click', document.querySelector('a'), () => console.log('...')) // должна добавить указанный обработчик кликов на указанный элемент
  */
 function addListener(eventName, target, fn) {
-    target.addEventListener(eventName, fn);
+    target.addEventListener(eventName, fn, false);
 }
 
 /*
@@ -21,7 +21,7 @@ function addListener(eventName, target, fn) {
    removeListener('click', document.querySelector('a'), someHandler) // должна удалить указанный обработчик кликов на указанный элемент
  */
 function removeListener(eventName, target, fn) {
-    target.removeEventListener(eventName, fn);
+    target.removeEventListener(eventName, fn, false);
 }
 
 /*
@@ -35,7 +35,7 @@ function removeListener(eventName, target, fn) {
 function skipDefault(eventName, target) {
     target.addEventListener(eventName, (e) => {
         e.preventDefault();
-    })
+    }, false)
 }
 
 /*
@@ -47,7 +47,9 @@ function skipDefault(eventName, target) {
    emulateClick(document.querySelector('a')) // для указанного элемента должно быть сэмулировано события click
  */
 function emulateClick(target) {
-    target.click();
+    let event = new CustomEvent('click');
+
+    target.dispatchEvent(event);
 }
 
 /*
@@ -60,9 +62,15 @@ function emulateClick(target) {
    delegate(document.body, () => console.log('кликнули на button')) // добавит такой обработчик кликов для body, который будет вызывать указанную функцию только если кликнули на кнопку (элемент с тегом button)
  */
 function delegate(target, fn) {
-    target.querySelectorAll('button').forEach(item => {
-        item.addEventListener('click', fn)
-    })
+    target.addEventListener('click', (e) => {
+        let btn = e.target.closest('button');
+
+        if (!btn || !target.contains(btn)) {
+            return;
+        }
+
+        fn();
+    }, false);
 }
 
 /*
@@ -75,12 +83,7 @@ function delegate(target, fn) {
    once(document.querySelector('button'), () => console.log('обработчик выполнился!')) // добавит такой обработчик кликов для указанного элемента, который вызовется только один раз и затем удалится
  */
 function once(target, fn) {
-    let handler = function() {
-        fn();
-        this.removeEventListener('click', handler);
-    };
-
-    target.addEventListener('click', handler)
+    target.addEventListener('click', fn, { once: true });
 }
 
 export {

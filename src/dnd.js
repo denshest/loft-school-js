@@ -30,12 +30,16 @@ function createDiv() {
     const namespaceURI = 'http://www.w3.org/1999/xhtml';
     let div = document.createElementNS(namespaceURI, 'div');
 
+    const newStyles = {
+        height: `${getRandomInt(200)}px`,
+        width: `${getRandomInt(200)}px`,
+        top: `${getRandomInt(200)}px`,
+        left: `${getRandomInt(200)}px`,
+        backgroundColor: `rgb(${getRandomInt(255)}, ${getRandomInt(255)}, ${getRandomInt(255)})`
+    };
+
     div.classList.add('draggable-div');
-    div.style.width = `${getRandomInt(200)}px`;
-    div.style.height = `${getRandomInt(200)}px`;
-    div.style.top = `${getRandomInt(200)}px`;
-    div.style.left = `${getRandomInt(200)}px`;
-    div.style.backgroundColor = `rgb(${getRandomInt(255)}, ${getRandomInt(255)}, ${getRandomInt(255)})`;
+    Object.assign(div.style, newStyles);
 
     return div;
 }
