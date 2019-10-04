@@ -31,6 +31,66 @@
    const newDiv = document.createElement('div');
    homeworkContainer.appendChild(newDiv);
  */
+
+let cookies = [];
+let str = '';
+
+function updateCookie() {
+    cookies = [];
+    if (document.cookie) {
+        document.cookie.split(';').forEach(item => {
+            cookies.push({
+                'name': item.split('=')[0],
+                'value': item.split('=')[1],
+            });
+        });
+    }
+    updateTable();
+}
+
+function deleteCookie(name) {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
+function updateTable() {
+    listTable.innerHTML = '';
+
+    let array = filterCookies(str);
+
+    array.forEach(item => {
+        let tr = document.createElement('tr'),
+            name = document.createElement('td'),
+            value = document.createElement('td'),
+            removeBtn = document.createElement('button');
+
+        name.innerText = item.name;
+        value.innerText = item.value;
+        removeBtn.innerText = 'Удалить';
+
+        tr.appendChild(name);
+        tr.appendChild(value);
+        tr.appendChild(removeBtn);
+
+        listTable.appendChild(tr);
+    });
+}
+
+function isMatching(full, chunk) {
+    return full.toLowerCase().indexOf(chunk.toLowerCase()) >= 0
+}
+
+function filterCookies(str) {
+    let arr = [];
+
+    cookies.forEach(item => {
+        if (isMatching(item.name, str) || isMatching(item.value, str)) {
+            arr.push(item);
+        }
+    });
+
+    return arr;
+}
+
 const homeworkContainer = document.querySelector('#homework-container');
 // текстовое поле для фильтрации cookie
 const filterNameInput = homeworkContainer.querySelector('#filter-name-input');
@@ -43,10 +103,37 @@ const addButton = homeworkContainer.querySelector('#add-button');
 // таблица со списком cookie
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
+updateCookie();
+
 filterNameInput.addEventListener('keyup', function() {
-    // здесь можно обработать нажатия на клавиши внутри текстового поля для фильтрации cookie
+    str = filterNameInput.value;
+
+    if (str) {
+        let arr = filterCookies(str);
+
+        updateTable(arr);
+    } else {
+        updateTable();
+    }
 });
 
 addButton.addEventListener('click', () => {
-    // здесь можно обработать нажатие на кнопку "добавить cookie"
+    if (addNameInput.value && addValueInput.value) {
+        document.cookie = `${addNameInput.value}=${addValueInput.value}`;
+        updateCookie();
+
+        addNameInput.value = '';
+        addValueInput.value = '';
+    }
 });
+
+listTable.addEventListener('click', (e) => {
+    let btn = e.target.closest('button');
+
+    if (!btn || !listTable.contains(btn)) {
+        return;
+    }
+
+    deleteCookie(btn.parentElement.firstChild.innerText);
+    updateCookie();
+}, false);
